@@ -37,7 +37,7 @@ $heroSlides = [
                 <?php foreach ($heroSlides as $i => $slide): ?>
                     <div class="hero-slide" role="group" aria-roledescription="слайд" aria-label="<?= $i + 1 ?> из <?= count($heroSlides) ?>">
                         <img class="hero-slide__img" src="<?= e(asset('img/' . $slide['image'])) ?>" alt=""
-                             loading="<?= $i === 0 ? 'eager' : 'lazy' ?>" width="1200" height="420">
+                             loading="<?= $i === 0 ? 'eager' : 'lazy' ?>" width="1600" height="600">
                         <div class="hero-slide__caption">
                             <span class="badge badge--sale"><?= e($slide['eyebrow']) ?></span>
                             <h2><?= e($slide['title']) ?></h2>
