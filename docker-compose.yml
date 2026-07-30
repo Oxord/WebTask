@@ -10,7 +10,9 @@ services:
     environment:
       APP_ENV: ${APP_ENV:-dev}
       APP_DEBUG: ${APP_DEBUG:-true}
-      APP_URL: ${APP_URL:-http://localhost:8081}
+      # Пусто по умолчанию — тогда url() отдаёт относительные пути и сайт работает
+      # на любом порту без правки конфига. Задавайте, только если нужны абсолютные ссылки.
+      APP_URL: ${APP_URL:-}
       DB_HOST: ${DB_HOST:-db}
       DB_PORT: ${DB_PORT:-3306}
       DB_NAME: ${DB_NAME:-decor_home}
@@ -27,7 +29,9 @@ services:
   db:
     image: mysql:8.0
     ports:
-      - "3307:3306"
+      # Порт наружу нужен только для подключения GUI-клиентом; если 3307 занят —
+      # переопределите DB_PORT_HOST в .env, приложение это не затрагивает.
+      - "${DB_PORT_HOST:-3307}:3306"
     environment:
       MYSQL_DATABASE: ${DB_NAME:-decor_home}
       MYSQL_USER: ${DB_USER:-decor}
