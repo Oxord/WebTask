@@ -1,0 +1,6 @@
+# Скрипты должны сохранять «родные» окончания строк при клоне на любой ОС:
+# .bat и .ps1 ломаются под Windows с LF, bash-скрипты — с CRLF.
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.sh  text eol=lf
+*.sql text eol=lf

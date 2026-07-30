@@ -20,11 +20,14 @@ docker compose exec web vendor/bin/phpunit   # 202 теста
 
 Сайт — http://localhost:8081, админка — http://localhost:8081/admin.
 
-Без Docker (локальные PHP 8.3+ и MySQL, только macOS/Linux):
+Без Docker (локальные PHP 8.3+ и MySQL) — Windows, macOS и Linux:
 
 ```bash
-./scripts/serve-native.sh              # сам создаёт БД, грузит схему и данные, поднимает сервер
+./scripts/serve-native.sh              # macOS / Linux
+scripts\serve-native.bat               # Windows (обходит политику выполнения PowerShell)
 ```
+
+Скрипт сам проверяет зависимости, создаёт БД, грузит схему с демо-данными и поднимает сервер.
 
 Отличия нативного режима и подробности — в [README.md](README.md).
 
