@@ -52,7 +52,7 @@ $router->get('/promotions', [PromotionController::class, 'index']);
 $router->get('/promotions/{slug}', [PromotionController::class, 'show']);
 
 $router->get('/reviews', [ReviewController::class, 'index']);
-$router->post('/reviews', [ReviewController::class, 'store'], [new RequireAuth()]);
+$router->post('/reviews', [ReviewController::class, 'store'], [RequireAuth::class]);
 
 $router->get('/contacts', [ContactController::class, 'index']);
 $router->post('/contacts', [ContactController::class, 'store']);
@@ -69,69 +69,76 @@ $router->post('/checkout', [CheckoutController::class, 'store']);
 $router->get('/checkout/success/{id}', [CheckoutController::class, 'success']);
 
 // --- Аутентификация ---
-$router->get('/login', [AuthController::class, 'showLogin'], [new RequireGuest()]);
-$router->post('/login', [AuthController::class, 'login'], [new RequireGuest()]);
-$router->get('/register', [AuthController::class, 'showRegister'], [new RequireGuest()]);
-$router->post('/register', [AuthController::class, 'register'], [new RequireGuest()]);
+$router->get('/login', [AuthController::class, 'showLogin'], [RequireGuest::class]);
+$router->post('/login', [AuthController::class, 'login'], [RequireGuest::class]);
+$router->get('/register', [AuthController::class, 'showRegister'], [RequireGuest::class]);
+$router->post('/register', [AuthController::class, 'register'], [RequireGuest::class]);
 $router->post('/logout', [AuthController::class, 'logout']);
 
 // --- Личный кабинет ---
-$router->get('/account', [AccountController::class, 'index'], [new RequireAuth()]);
-$router->post('/account/profile', [AccountController::class, 'updateProfile'], [new RequireAuth()]);
-$router->post('/account/password', [AccountController::class, 'changePassword'], [new RequireAuth()]);
-$router->get('/account/orders', [AccountController::class, 'orders'], [new RequireAuth()]);
-$router->get('/account/orders/{id}', [AccountController::class, 'showOrder'], [new RequireAuth()]);
+$router->get('/account', [AccountController::class, 'index'], [RequireAuth::class]);
+$router->post('/account/profile', [AccountController::class, 'updateProfile'], [RequireAuth::class]);
+$router->post('/account/password', [AccountController::class, 'changePassword'], [RequireAuth::class]);
+$router->get('/account/orders', [AccountController::class, 'orders'], [RequireAuth::class]);
+$router->get('/account/orders/{id}', [AccountController::class, 'showOrder'], [RequireAuth::class]);
 
 // --- Админ-панель ---
-$adminAccess = static fn (): RequireRole => new RequireRole('admin.access');
-$manageProducts = static fn (): RequireRole => new RequireRole('products.manage');
-$manageCategories = static fn (): RequireRole => new RequireRole('categories.manage');
-$managePromotions = static fn (): RequireRole => new RequireRole('promotions.manage');
-$manageUsers = static fn (): RequireRole => new RequireRole('users.manage');
-$manageOrders = static fn (): RequireRole => new RequireRole('orders.manage');
-$viewOrders = static fn (): RequireRole => new RequireRole('orders.view');
-$moderateReviews = static fn (): RequireRole => new RequireRole('reviews.moderate');
+// Middleware создаётся лениво — только для сработавшего маршрута. Если создавать его
+// сразу при регистрации, конструктор RequireRole тянет UserRepository, тот открывает
+// соединение с БД на каждый запрос, причём до try/catch ниже: недоступная база давала
+// сырой fatal error с трассировкой вместо страницы 500.
+$role = static fn (string $permission): Closure
+    => static fn (Request $request): ?Response => (new RequireRole($permission))($request);
 
-$router->get('/admin', [DashboardController::class, 'index'], [$adminAccess()]);
+$adminAccess = $role('admin.access');
+$manageProducts = $role('products.manage');
+$manageCategories = $role('categories.manage');
+$managePromotions = $role('promotions.manage');
+$manageUsers = $role('users.manage');
+$manageOrders = $role('orders.manage');
+$viewOrders = $role('orders.view');
+$moderateReviews = $role('reviews.moderate');
 
-$router->get('/admin/products', [AdminProductController::class, 'index'], [$manageProducts()]);
-$router->get('/admin/products/create', [AdminProductController::class, 'create'], [$manageProducts()]);
-$router->post('/admin/products', [AdminProductController::class, 'store'], [$manageProducts()]);
-$router->get('/admin/products/{id}/edit', [AdminProductController::class, 'edit'], [$manageProducts()]);
-$router->post('/admin/products/{id}', [AdminProductController::class, 'update'], [$manageProducts()]);
-$router->post('/admin/products/{id}/delete', [AdminProductController::class, 'destroy'], [$manageProducts()]);
+$router->get('/admin', [DashboardController::class, 'index'], [$adminAccess]);
 
-$router->get('/admin/categories', [AdminCategoryController::class, 'index'], [$manageCategories()]);
-$router->post('/admin/categories', [AdminCategoryController::class, 'store'], [$manageCategories()]);
-$router->post('/admin/categories/{id}', [AdminCategoryController::class, 'update'], [$manageCategories()]);
-$router->post('/admin/categories/{id}/delete', [AdminCategoryController::class, 'destroy'], [$manageCategories()]);
+$router->get('/admin/products', [AdminProductController::class, 'index'], [$manageProducts]);
+$router->get('/admin/products/create', [AdminProductController::class, 'create'], [$manageProducts]);
+$router->post('/admin/products', [AdminProductController::class, 'store'], [$manageProducts]);
+$router->get('/admin/products/{id}/edit', [AdminProductController::class, 'edit'], [$manageProducts]);
+$router->post('/admin/products/{id}', [AdminProductController::class, 'update'], [$manageProducts]);
+$router->post('/admin/products/{id}/delete', [AdminProductController::class, 'destroy'], [$manageProducts]);
 
-$router->get('/admin/promotions', [AdminPromotionController::class, 'index'], [$managePromotions()]);
-$router->get('/admin/promotions/create', [AdminPromotionController::class, 'create'], [$managePromotions()]);
-$router->post('/admin/promotions', [AdminPromotionController::class, 'store'], [$managePromotions()]);
-$router->get('/admin/promotions/{id}/edit', [AdminPromotionController::class, 'edit'], [$managePromotions()]);
-$router->post('/admin/promotions/{id}', [AdminPromotionController::class, 'update'], [$managePromotions()]);
-$router->post('/admin/promotions/{id}/delete', [AdminPromotionController::class, 'destroy'], [$managePromotions()]);
+$router->get('/admin/categories', [AdminCategoryController::class, 'index'], [$manageCategories]);
+$router->post('/admin/categories', [AdminCategoryController::class, 'store'], [$manageCategories]);
+$router->post('/admin/categories/{id}', [AdminCategoryController::class, 'update'], [$manageCategories]);
+$router->post('/admin/categories/{id}/delete', [AdminCategoryController::class, 'destroy'], [$manageCategories]);
 
-$router->get('/admin/reviews', [AdminReviewController::class, 'index'], [$moderateReviews()]);
-$router->post('/admin/reviews/{id}/moderate', [AdminReviewController::class, 'moderate'], [$moderateReviews()]);
-$router->post('/admin/reviews/{id}/featured', [AdminReviewController::class, 'toggleFeatured'], [$moderateReviews()]);
-$router->post('/admin/reviews/{id}/delete', [AdminReviewController::class, 'destroy'], [$moderateReviews()]);
+$router->get('/admin/promotions', [AdminPromotionController::class, 'index'], [$managePromotions]);
+$router->get('/admin/promotions/create', [AdminPromotionController::class, 'create'], [$managePromotions]);
+$router->post('/admin/promotions', [AdminPromotionController::class, 'store'], [$managePromotions]);
+$router->get('/admin/promotions/{id}/edit', [AdminPromotionController::class, 'edit'], [$managePromotions]);
+$router->post('/admin/promotions/{id}', [AdminPromotionController::class, 'update'], [$managePromotions]);
+$router->post('/admin/promotions/{id}/delete', [AdminPromotionController::class, 'destroy'], [$managePromotions]);
 
-$router->get('/admin/orders', [AdminOrderController::class, 'index'], [$viewOrders()]);
-$router->get('/admin/orders/{id}', [AdminOrderController::class, 'show'], [$viewOrders()]);
-$router->post('/admin/orders/{id}/status', [AdminOrderController::class, 'updateStatus'], [$manageOrders()]);
+$router->get('/admin/reviews', [AdminReviewController::class, 'index'], [$moderateReviews]);
+$router->post('/admin/reviews/{id}/moderate', [AdminReviewController::class, 'moderate'], [$moderateReviews]);
+$router->post('/admin/reviews/{id}/featured', [AdminReviewController::class, 'toggleFeatured'], [$moderateReviews]);
+$router->post('/admin/reviews/{id}/delete', [AdminReviewController::class, 'destroy'], [$moderateReviews]);
 
-$router->get('/admin/users', [AdminUserController::class, 'index'], [$manageUsers()]);
-$router->get('/admin/users/create', [AdminUserController::class, 'create'], [$manageUsers()]);
-$router->post('/admin/users', [AdminUserController::class, 'store'], [$manageUsers()]);
-$router->get('/admin/users/{id}/edit', [AdminUserController::class, 'edit'], [$manageUsers()]);
-$router->post('/admin/users/{id}', [AdminUserController::class, 'update'], [$manageUsers()]);
-$router->post('/admin/users/{id}/delete', [AdminUserController::class, 'destroy'], [$manageUsers()]);
+$router->get('/admin/orders', [AdminOrderController::class, 'index'], [$viewOrders]);
+$router->get('/admin/orders/{id}', [AdminOrderController::class, 'show'], [$viewOrders]);
+$router->post('/admin/orders/{id}/status', [AdminOrderController::class, 'updateStatus'], [$manageOrders]);
 
-$router->get('/admin/messages', [AdminMessageController::class, 'index'], [$adminAccess()]);
-$router->post('/admin/messages/{id}/read', [AdminMessageController::class, 'markRead'], [$adminAccess()]);
-$router->post('/admin/messages/{id}/delete', [AdminMessageController::class, 'destroy'], [$adminAccess()]);
+$router->get('/admin/users', [AdminUserController::class, 'index'], [$manageUsers]);
+$router->get('/admin/users/create', [AdminUserController::class, 'create'], [$manageUsers]);
+$router->post('/admin/users', [AdminUserController::class, 'store'], [$manageUsers]);
+$router->get('/admin/users/{id}/edit', [AdminUserController::class, 'edit'], [$manageUsers]);
+$router->post('/admin/users/{id}', [AdminUserController::class, 'update'], [$manageUsers]);
+$router->post('/admin/users/{id}/delete', [AdminUserController::class, 'destroy'], [$manageUsers]);
+
+$router->get('/admin/messages', [AdminMessageController::class, 'index'], [$adminAccess]);
+$router->post('/admin/messages/{id}/read', [AdminMessageController::class, 'markRead'], [$adminAccess]);
+$router->post('/admin/messages/{id}/delete', [AdminMessageController::class, 'destroy'], [$adminAccess]);
 
 $request = Request::fromGlobals();
 

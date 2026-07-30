@@ -11,6 +11,14 @@ PHPUnit 11. Запускается локально одной командой.
 
 ## Как запустить
 
+Есть два способа. **Вариант А (Docker)** — рекомендуемый: ничего не ставится в систему
+и окружение одинаково на любой машине. **Вариант Б (без Docker)** — если Docker ставить
+не хочется: PHP и MySQL устанавливаются локально, запуск полностью из терминала.
+
+---
+
+## Вариант А — через Docker
+
 ### Шаг 1. Установите Docker
 
 Нужен **только Docker** — PHP, MySQL и Apache ставить на компьютер не надо, они
@@ -84,6 +92,104 @@ SMOKE_BASE_URL=http://localhost:8090 ./scripts/smoke.sh
 
 ---
 
+## Вариант Б — без Docker, из терминала
+
+Подходит, если Docker ставить не хочется. Понадобятся PHP 8.3+, MySQL и Composer,
+установленные на компьютере. Работает на Windows, macOS и Linux.
+
+### Шаг 1. Установите PHP, MySQL и Composer
+
+**Windows** — проще всего через [Chocolatey](https://chocolatey.org/install)
+(PowerShell от имени администратора):
+
+```powershell
+choco install php mysql composer -y
+```
+
+Без Chocolatey — вручную: [PHP](https://windows.php.net/download/) (сборка Thread Safe,
+каталог с `php.exe` добавить в `PATH`), [MySQL](https://dev.mysql.com/downloads/installer/),
+[Composer](https://getcomposer.org/Composer-Setup.exe). После установки PHP скопируйте
+`php.ini-development` в `php.ini` и раскомментируйте строки `extension=pdo_mysql`,
+`extension=gd`, `extension=mbstring` — скрипт запуска подскажет, если чего-то не хватает.
+
+**macOS:**
+
+```bash
+brew install php@8.3 mysql@8.0 composer
+brew link --overwrite --force php@8.3
+brew link --overwrite --force mysql@8.0
+brew services start mysql@8.0
+```
+
+**Ubuntu / Debian:**
+
+```bash
+sudo apt install php8.3-cli php8.3-mysql php8.3-gd php8.3-mbstring mysql-server composer
+sudo systemctl start mysql
+```
+
+### Шаг 2. Запустите
+
+**Windows** — двойной клик по `scripts\serve-native.bat` либо в терминале:
+
+```powershell
+.\scripts\serve-native.bat
+```
+
+Можно и напрямую PowerShell-скриптом, но тогда Windows может заблокировать запуск
+неподписанного файла — `.bat` эту проблему обходит:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\serve-native.ps1
+```
+
+**macOS / Linux:**
+
+```bash
+./scripts/serve-native.sh
+```
+
+Скрипт всё делает сам: проверяет версии и расширения PHP, создаёт базу и пользователя,
+загружает схему и демо-данные, ставит зависимости и поднимает сервер. Ничего в систему
+он не устанавливает — если чего-то не хватает, просто покажет нужную команду и остановится.
+
+Дополнительные параметры:
+
+| Что нужно | Windows | macOS / Linux |
+|---|---|---|
+| Другой порт | `.\scripts\serve-native.bat -Port 8090` | `PORT=8090 ./scripts/serve-native.sh` |
+| У `root` задан пароль | `.\scripts\serve-native.bat -AdminPass "пароль"` | `MYSQL_ADMIN_PASS=пароль ./scripts/serve-native.sh` |
+| Пересоздать базу | `mysql -u root -e "DROP DATABASE decor_home;"` | `mysql -u root -e 'DROP DATABASE decor_home;'` |
+
+После удаления базы просто запустите скрипт снова — схема и демо-данные зальются заново.
+
+Остановка — `Ctrl+C`.
+
+### Чем этот вариант отличается
+
+Сайт работает полностью, но по мелочам он слабее «докерного»:
+
+- **Встроенный сервер PHP не читает `.htaccess`.** Его правила (маршрутизация через
+  фронт-контроллер и запрет доступа к `.env`, `.git`, `composer.json`) воспроизведены
+  в `scripts/router.php`. Заголовки безопасности при этом выставляет сам
+  `public/index.php`, так что они на месте в обоих вариантах.
+- **Нет gzip-сжатия и кэш-заголовков для статики** — их в варианте А даёт Apache
+  (`mod_deflate`, `mod_expires`). Это влияет только на скорость загрузки, не на работу.
+- **Версии PHP и MySQL — те, что стоят у вас**, а не зафиксированные 8.3 и 8.0.
+  Скрипт проверяет минимальную версию PHP, но полного совпадения окружения не гарантирует.
+- **Встроенный сервер PHP не предназначен для продакшена** — только для локальной работы.
+  На Windows он вдобавок обрабатывает запросы по одному: параллельная выдача
+  (`PHP_CLI_SERVER_WORKERS`) там не поддерживается, поэтому страницы грузятся чуть медленнее.
+
+Интеграционные тесты в этом варианте требуют отдельной тестовой базы, поэтому их проще
+запускать через Docker. Юнит-тесты работают всегда:
+
+```bash
+vendor/bin/phpunit --testsuite Unit
+```
+
+---
+
 ## Тестовые аккаунты
 
 | Роль | Email | Пароль |
@@ -108,7 +214,7 @@ SMOKE_BASE_URL=http://localhost:8090 ./scripts/smoke.sh
 
 ---
 
-## Если порт 8081 занят
+## Если порт 8081 занят (вариант А)
 
 Симптом: `docker compose up` падает с `port is already allocated`.
 
@@ -149,6 +255,10 @@ docker compose up -d
 На компьютере при этом ничего не устанавливается и не изменяется — всё удаляется
 одной командой `docker compose down -v`.
 
+Это рекомендация, а не жёсткое требование: код на Docker никак не завязан, поэтому
+есть вариант Б с локальными PHP и MySQL. Платой за него будут ровно те различия,
+что перечислены в разделе «Чем этот вариант отличается».
+
 **Почему база наполняется сама.**
 Файлы `db/01_schema.sql` и `db/02_seed.sql` подключены в
 `/docker-entrypoint-initdb.d` — официальный образ MySQL выполняет такие скрипты при
@@ -176,7 +286,7 @@ docker compose up -d
 
 ---
 
-## Полезные команды
+## Полезные команды (вариант А)
 
 ```bash
 # Логи (например, если страница отдаёт 500)
@@ -226,6 +336,11 @@ docker compose up -d
 | Интеграционные тесты падают на подключении | Контейнер `db_test` ещё поднимается. Подождите 20–30 секунд после `up` и повторите. |
 | MySQL не стартует после правки SQL | Синтаксическая ошибка в `db/*.sql` останавливает инициализацию. Смотрите `docker compose logs db`, исправьте и выполните `docker compose down -v && docker compose up -d`. |
 | На Windows не запускается `./scripts/smoke.sh` | Это bash-скрипт. Запускайте из Git Bash или WSL. |
+| *(без Docker)* `MySQL не отвечает` | Сервер не запущен: `brew services start mysql@8.0` или `sudo systemctl start mysql`. Если у `root` есть пароль — `MYSQL_ADMIN_PASS=... ./scripts/serve-native.sh`. |
+| *(без Docker)* `нет расширения PHP: pdo_mysql` | Установлен PHP без нужных расширений: `brew install php@8.3` или `sudo apt install php8.3-mysql php8.3-gd php8.3-mbstring`. |
+| *(без Docker)* Стили и картинки не грузятся | Сервер запущен без роутера. Запускайте только через скрипт (`serve-native.sh` / `serve-native.bat`) — он передаёт `scripts/router.php`, который отдаёт статику. |
+| *(Windows)* «Выполнение сценариев отключено в этой системе» | Запускайте `scripts\serve-native.bat`, а не `.ps1` напрямую — обёртка обходит политику выполнения. |
+| *(Windows)* `php не является внутренней или внешней командой` | Каталог с `php.exe` не добавлен в `PATH`. Перезапустите терминал после установки. |
 
 ---
 
