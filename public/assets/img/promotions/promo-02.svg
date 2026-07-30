@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" role="img">
+  <defs>
+    <linearGradient id="promo2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EFE7DC"/>
+      <stop offset="100%" stop-color="#8A9A83"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#promo2)"/>
+  <g fill="#6E7C67" fill-opacity="0.85">
+    <rect x="105" y="105" width="190" height="190" rx="26"/>
+    <path d="M 105 200 Q 200 170 295 200" fill="none" stroke="#4A3F35" stroke-opacity="0.15" stroke-width="4"/>
+    <path d="M 105 160 Q 200 130 295 160" fill="none" stroke="#4A3F35" stroke-opacity="0.1" stroke-width="3"/>
+  </g>
+  <text x="200.0" y="370" font-family="Georgia, 'Times New Roman', serif" font-size="20" fill="#4A3F35" fill-opacity="0.75" text-anchor="middle">Скидки на текстиль</text>
+</svg>

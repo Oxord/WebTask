@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" role="img">
+  <defs>
+    <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EFE7DC"/>
+      <stop offset="100%" stop-color="#C97B5A"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#g3)"/>
+  <g fill="#A85E40" fill-opacity="0.85">
+    <path d="M 162 100 C 148 150, 142 180, 160 230
+             C 170 260, 170 285, 154 300
+             L 246 300
+             C 230 285, 230 260, 240 230
+             C 258 180, 252 150, 238 100 Z"/>
+    <ellipse cx="200" cy="100" rx="38" ry="10"/>
+  </g>
+  <text x="200.0" y="370" font-family="Georgia, 'Times New Roman', serif" font-size="17" fill="#4A3F35" fill-opacity="0.75" text-anchor="middle">Ваза &quot;Волна&quot;</text>
+</svg>
