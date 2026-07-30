@@ -1,18 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="600" viewBox="0 0 1600 600" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="600" viewBox="0 0 1600 600" role="presentation">
   <defs>
-    <linearGradient id="hero3" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#C97B5A"/>
-      <stop offset="100%" stop-color="#E3D6C4"/>
+    <linearGradient id="hero-3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0E6DA"/>
+      <stop offset="100%" stop-color="#D8B49C"/>
     </linearGradient>
   </defs>
-  <rect width="1600" height="600" fill="url(#hero3)"/>
-  <g transform="translate(1180,0.0) scale(1.5)">
-  <g fill="#A85E40" fill-opacity="0.85">
-    <path d="M 130 260 L 270 260 L 290 360 L 110 360 Z"/>
-    <rect x="194" y="360" width="12" height="70" />
-    <ellipse cx="200" cy="434" rx="46" ry="10"/>
-  </g>
-  </g>
-  <text x="120" y="290.0" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="bold" fill="#4A3F35">Тёплый свет в каждый дом</text>
-  <text x="120" y="340.0" font-family="Georgia, 'Times New Roman', serif" font-size="24" fill="#4A3F35" fill-opacity="0.75">Светильники со скидкой до 15%</text>
+  <rect width="1600" height="600" fill="url(#hero-3)"/>
+  <circle cx="1290" cy="240" r="205" fill="#FFFFFF" fill-opacity="0.32"/>
+  <circle cx="1460" cy="370" r="145" fill="#C0674A" fill-opacity="0.12"/>
+  <ellipse cx="1230" cy="200" rx="30" ry="84" fill="#7E9078" fill-opacity="0.85" transform="rotate(-30 1230 200)"/>
+  <ellipse cx="1300" cy="172" rx="28" ry="92" fill="#8A9A83" fill-opacity="0.85" transform="rotate(-6 1300 172)"/>
+  <ellipse cx="1372" cy="202" rx="30" ry="84" fill="#7E9078" fill-opacity="0.85" transform="rotate(28 1372 202)"/>
+  <ellipse cx="1188" cy="248" rx="24" ry="66" fill="#8A9A83" fill-opacity="0.75" transform="rotate(-52 1188 248)"/>
+  <ellipse cx="1412" cy="250" rx="24" ry="66" fill="#8A9A83" fill-opacity="0.75" transform="rotate(52 1412 250)"/>
+  <path d="M 1226 300 L 1378 300 L 1352 424 L 1252 424 Z" fill="#C0674A" fill-opacity="0.92"/>
+  <rect x="1216" y="288" width="172" height="26" rx="10" fill="#A2543B" fill-opacity="0.95"/>
+  <ellipse cx="1302" cy="430" rx="230" ry="13" fill="#8A6B52" fill-opacity="0.18"/>
 </svg>
