@@ -1,0 +1,11 @@
+/vendor/
+.env
+/public/assets/dist/
+/public/assets/uploads/*
+!/public/assets/uploads/.gitkeep
+.DS_Store
+# Локальные настройки Claude Code содержат учётные данные — в репозиторий не попадают.
+/.claude/
+/var/cache/
+.phpunit.cache/
+.phpunit.result.cache

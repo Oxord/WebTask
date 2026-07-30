@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" role="img">
+  <defs>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EFE7DC"/>
+      <stop offset="100%" stop-color="#C97B5A"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#g2)"/>
+  <g fill="#A85E40" fill-opacity="0.85">
+    <path d="M 130 180 L 270 180 L 250 290 L 150 290 Z"/>
+    <ellipse cx="200" cy="180" rx="70" ry="14"/>
+    <path d="M 190 180 C 160 110, 100 100, 80 60
+             C 110 70, 160 80, 190 130 Z" fill-opacity="0.6"/>
+    <path d="M 210 180 C 240 100, 290 90, 310 45
+             C 290 65, 240 70, 210 125 Z" fill-opacity="0.6"/>
+  </g>
+  <text x="200.0" y="370" font-family="Georgia, 'Times New Roman', serif" font-size="17" fill="#4A3F35" fill-opacity="0.75" text-anchor="middle">Кашпо &quot;Лоза&quot;</text>
+</svg>

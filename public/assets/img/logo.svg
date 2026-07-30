@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="60" viewBox="0 0 240 60" role="img">
+  <rect width="240" height="60" fill="none"/>
+  <g fill="#C97B5A">
+    <path d="M18 46 C12 32, 12 22, 20 10 C28 22, 28 32, 22 46 Z"/>
+    <ellipse cx="20" cy="10" rx="9" ry="4"/>
+  </g>
+  <text x="42" y="28" font-family="Georgia, 'Times New Roman', serif" font-size="19" font-weight="bold" fill="#4A3F35">Декор</text>
+  <text x="42" y="48" font-family="Georgia, 'Times New Roman', serif" font-size="14" fill="#6E7C67">для дома</text>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="600" viewBox="0 0 1600 600" role="img">
+  <defs>
+    <linearGradient id="hero1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EFE7DC"/>
+      <stop offset="100%" stop-color="#E3D6C4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="600" fill="url(#hero1)"/>
+  <g transform="translate(1180,0.0) scale(1.5)">
+  <g fill="#C97B5A" fill-opacity="0.85">
+    <path d="M 162 210 C 148 260, 142 290, 160 340
+             C 170 370, 170 395, 154 410
+             L 246 410
+             C 230 395, 230 370, 240 340
+             C 258 290, 252 260, 238 210 Z"/>
+    <ellipse cx="200" cy="210" rx="38" ry="10"/>
+  </g>
+  </g>
+  <text x="120" y="290.0" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="bold" fill="#4A3F35">Декор для дома</text>
+  <text x="120" y="340.0" font-family="Georgia, 'Times New Roman', serif" font-size="24" fill="#4A3F35" fill-opacity="0.75">Уют начинается с деталей</text>
+</svg>

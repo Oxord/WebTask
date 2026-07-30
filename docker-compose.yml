@@ -1,0 +1,73 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    ports:
+      - "${WEB_PORT:-8081}:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      APP_URL: ${APP_URL:-http://localhost:8081}
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-decor_home}
+      DB_USER: ${DB_USER:-decor}
+      DB_PASS: ${DB_PASS:-decor_secret}
+      TEST_DB_HOST: ${TEST_DB_HOST:-db_test}
+      TEST_DB_NAME: ${TEST_DB_NAME:-decor_test}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - decor_net
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-decor_home}
+      MYSQL_USER: ${DB_USER:-decor}
+      MYSQL_PASSWORD: ${DB_PASS:-decor_secret}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-root_secret}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASS:-root_secret}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    networks:
+      - decor_net
+
+  db_test:
+    image: mysql:8.0
+    tmpfs:
+      - /var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${TEST_DB_NAME:-decor_test}
+      MYSQL_USER: ${DB_USER:-decor}
+      MYSQL_PASSWORD: ${DB_PASS:-decor_secret}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-root_secret}
+    volumes:
+      - ./db/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASS:-root_secret}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    networks:
+      - decor_net
+
+volumes:
+  db_data:
+
+networks:
+  decor_net:
+    driver: bridge
