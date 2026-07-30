@@ -20,6 +20,14 @@ docker compose exec web vendor/bin/phpunit   # 202 теста
 
 Сайт — http://localhost:8081, админка — http://localhost:8081/admin.
 
+Без Docker (локальные PHP 8.3+ и MySQL, только macOS/Linux):
+
+```bash
+./scripts/serve-native.sh              # сам создаёт БД, грузит схему и данные, поднимает сервер
+```
+
+Отличия нативного режима и подробности — в [README.md](README.md).
+
 > **Порт 8081, а не 8080.** На 8080 у пользователя работает не связанный с этим
 > проектом стек `projectarena`, поэтому порт вынесен в `WEB_PORT` в `.env`.
 
